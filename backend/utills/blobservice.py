@@ -19,7 +19,6 @@ class AzureBlobManager:
             print(f"Container '{container_name}' already exists.")
  
     # Create or Upload a file
-    @staticmethod
     def upload_file(self, blob_name, file):
         try:
             blob_client = self.container_client.get_blob_client(blob_name)

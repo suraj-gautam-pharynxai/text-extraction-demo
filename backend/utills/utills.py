@@ -213,7 +213,6 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
 """,
             "data": ["key1", "key2", "key3"]
         },
-
         {
             "prompt": """
 Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
@@ -258,4 +257,5 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
         },
     ]
     # Default to a generic prompt if index exceeds the list length
-    return prompts[index] if index < len(prompts) else {"prompt": "Generic prompt", "data": []}
+    # return prompts[0] if index < len(prompts) else {"prompt": "Generic prompt", "data": []}
+    return prompts[1]
