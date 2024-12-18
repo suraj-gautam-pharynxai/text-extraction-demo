@@ -1,0 +1,777 @@
+
+import { useEffect, useState } from 'react'
+import { Document, Page, pdfjs } from 'react-pdf'
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { MessageCircle, X, FileText, LucideUpload } from 'lucide-react'
+import { BsSendFill } from "react-icons/bs";
+import { ImEmbed2 } from "react-icons/im";
+import { WorkspaceService } from '@/services/documentService'
+import { IoChatbox } from "react-icons/io5";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from '@/components/ui/input'
+import { Label} from "@/components/ui/label"
+import { FaPlus } from 'react-icons/fa'
+import { useParams } from 'react-router-dom'
+import axios from 'axios'
+
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+
+
+interface PDFFile {
+  name: string;
+  url: string | File;
+}
+
+interface Message {
+  text: string;
+  sender: 'user' | 'bot';
+  document: string;
+}
+
+export default function Chatwithdoc() {
+  const [pdfFiles, setPdfFiles] = useState<PDFFile[]>([{ name: '', url: '' }])
+  const [isLoading, setIsLoading] = useState<{ [key: string]: boolean }>({}); // Store loading state for each document
+
+  const [pdfList, setPdfList] = useState([])
+  const [selectedPdf, setSelectedPdf] = useState<PDFFile>(pdfFiles[0])
+  const [numPages, setNumPages] = useState<number | null>(null)
+  const [messages, setMessages] = useState<Message[]>([])
+  const [currentChatDocument, setCurrentChatDocument] = useState<string>(pdfFiles[0].name)
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  console.log("selectedFile:",selectedFile)
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [chunkSource, setChunkSource] = useState<ChunkSource[]>([]); // Correct type here
+
+
+  
+  
+  const handleFileChange = () => {
+    // setSelectedFile(event.target.files?.[0] || null);
+  };
+
+
+  const getPdf = async () => {
+    setLoading(true); 
+    try {
+      const documentsData = await WorkspaceService.getSystemFiles();
+      const files = documentsData?.data?.workspaceFiles || []; 
+      setPdfList(files); 
+      console.log("pd:",files);
+      
+    } catch (err) {
+      setError('Failed to load PDF files.'); 
+      console.error(err); 
+    } finally {
+      setLoading(false); 
+    }
+  };
+
+  useEffect(() => {
+    getPdf(); 
+  }, []); 
+
+  const handleUploadPdf = async() => {
+    if (selectedFile ) {
+
+    }
+    setIsDialogOpen(false)
+    setSelectedFile(null)
+  };
+  const handleProcess = async (pdfName: string) => {
+    setIsLoading((prevState) => ({ ...prevState, [pdfName]: true }));
+    setSelectedFile(pdfName)
+    try {
+      const payload = {
+        adds: [pdfName], // Add the document to the adds array
+        deletes: [], // No documents to delete in this case
+      };
+
+      // // Make sure slug is available
+      // if (!slug) {
+      //   console.error("Slug is undefined");
+      //   return;
+      // }
+      const workspaceId = 'i-love-pdf-69606269';
+
+      const response = await axios.post(
+        `${
+          import.meta.env.VITE_DOC_ANALYSER_URL
+        }/workspace/${workspaceId}/update-embeddings`,
+        payload
+      );
+
+      console.log("Response:", response.data);
+    } catch (error) {
+      // console.error("Error message:", error.message);
+    } finally {
+      setIsLoading((prevState) => ({ ...prevState, [pdfName]: false }));
+    
+    }
+  };
+
+// const handleEmbedPdf = async() => {
+//   const EmbedData = await WorkspaceService.updateEmbeddings();
+//   console.log("updatedData:", EmbedData);
+
+//   };
+  const handleSendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
+    console.log("this is my messages",messages)
+    alert("hi")
+    event.preventDefault();
+  
+    const formData = new FormData(event.currentTarget);
+    const message = formData.get('message') as string;
+  
+    if (!message.trim()) return;
+  
+    // Add the user message to the chat
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: message, sender: "user", document: selectedFile },
+    ]);
+  
+    // Clear the input field
+    event.currentTarget.reset();
+  
+    // Set loading state
+    setLoading(true);
+  
+    try {
+      // Call the service
+      const response = await WorkspaceService.chatWithDocuments(selectedFile, message, "i-love-pdf-69606269");
+      console.log("API Response:", response);
+      const botMessage = response.textResponse || "Sorry, no reply available.";
+      console.log("Bot Message:", botMessage);
+      const sources = response.sources || [];
+      console.log("Sources:", sources);
+  
+      console.log("Chunk Sources:", sources);
+  
+      // Add the bot's response to the chat
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: botMessage, sender: "bot", document: selectedFile },
+      ]);
+  
+      // Update chunk sources state
+      setChunkSource(sources);
+
+    } catch (error) {
+      console.error("Error sending message:", error);
+  
+      // Handle errors gracefully
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: "An error occurred. Please try again.", sender: "bot" },
+      ]);
+    } finally {
+      // Reset loading state
+      setLoading(false);
+    }
+  };
+
+
+
+  return (
+    <div className="    w-full   overflow-y-auto mx-auto p-8 mt-10">
+      <h1 className="  text-gray-700  text-2xl font-bold mb-4"> Chat With Document</h1>
+      <div className="  flex    gap-8 w-full h-[90%] pt-4  " >
+
+        <Card   >
+          <CardHeader>
+            <Dialog 
+            open={isDialogOpen} onOpenChange={setIsDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button className=" m-4">
+                  <FaPlus className="mr-1" />
+                  Add Document
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="h-80 sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Upload File</DialogTitle>
+                </DialogHeader>
+                <div className="flex flex-col mt-2 items-center justify-center space-y-2 border h-36 rounded-lg cursor-pointer">
+                  {selectedFile ? (
+                    <div className="text-center">
+                      <p className="text-sm font-semibold">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {(selectedFile.size / 1024).toFixed(2)} KB
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <Label htmlFor="pdfUpload">
+                        <LucideUpload className="h-8 w-8 text-gray-500" />
+                      </Label>
+                      <Input
+                        id="pdfUpload"
+                        type="file"
+                        style={{ display: "none" }}
+                        onChange={handleFileChange}
+                      />
+                      <p className="text-sm text-gray-500">Upload Here</p>
+                    </>
+                  )}
+                </div>
+                <DialogFooter>
+                  {/* {uploadPdfMutation.isLoading && <Spinner/>} */}
+                  <Button
+                    type="submit"
+                    onClick={handleUploadPdf}
+                  >
+                    Submit
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>          </CardHeader>
+          <CardContent>
+            {/* <ScrollArea className="h-full w-full mt-4">
+            {loading && <p>Loading PDFs...</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
+            {pdfList.length > 0 ? (
+        <ul>
+          {pdfList.map((file, index) => (
+<div key={index} className='flex justify-between p-4 gap-2'>
+<li >{file} </li> 
+<div className="flex items-center gap-2 mt-2 justify-start w-full">
+                {isloading[file]? (
+                  <div>
+                    <div className="animate-spin rounded-full border-4 border-blue-400 border-t-transparent h-6 w-6 " />
+                  </div>
+                ) : (
+                  <Button
+                    size={"sm"}
+                    className="px-2 gap-2"
+                    onClick={() => handleProcess(file)}
+                  >
+                    <ImEmbed2 className="h-5 w-5" />
+                    Embed
+                  </Button>
+                )}
+              </div></div>
+          ))}
+        </ul>
+      ) : (
+        !loading && <p>No PDF files available.</p>
+      )}
+
+            </ScrollArea> */}
+    <ScrollArea className="h-full w-full mt-4 p-4 bg-gray-50 rounded-md">
+      {loading && <p className="text-center text-gray-500">Loading PDFs...</p>}
+      {error && <p className="text-center text-red-600">{error}</p>}
+      {pdfList.length > 0 ? (
+        <ul className="space-y-4">
+          {pdfList.map((file, index) => (
+            <li
+              key={index}
+              className="flex justify-between items-center p-4 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-100 transition"
+            >
+              <div className="flex-grow justify-between gap-2">
+                <p className="text-gray-800 font-semibold truncate">{file}</p>
+              </div>
+              <div className="flex items-center gap-4">
+                {isLoading[file] ? (
+                  // Show a spinner inside the button
+                  <Button
+                    size="sm"
+                    className="px-4 py-2 bg-gray-400 text-white rounded-md cursor-not-allowed"
+                    disabled
+                  >
+                    <div className="animate-spin   rounded-full border-4 border-purple-600 border-t-transparent h-5 w-5" />
+                    Embedding...
+                  </Button>
+                ) : (
+                  <ImEmbed2  onClick={() => handleProcess(file)}className="h-5 w-5 mr-2" />
+                  
+                  // <Button
+                  //   size="sm"
+                  //   // className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  //   onClick={() => handleProcess(file)}
+                  // >
+                  //   <ImEmbed2 className="h-5 w-5 mr-2" />
+                  //   {/* Embed */}
+                  // </Button>
+                )}
+              </div>
+              <div> <IoChatbox className="h-5 w-5" />  </div>
+
+            </li>
+          ))}
+        </ul>
+      ) : (
+        !loading && <p className="text-center text-gray-600">No PDF files available.</p>
+      )}
+    </ScrollArea>
+
+
+          </CardContent>
+        </Card> 
+        <Card className='w-1/2'>
+          <CardHeader>
+            <CardTitle className="  text-gray-700 "> {currentChatDocument.length > 10 ? currentChatDocument.slice(0, 10) + "...Pdf" : currentChatDocument}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="h-[80%] flex flex-col">
+  <ScrollArea className="flex-grow h-full w-full pr-4">
+    <div className="flex flex-col space-y-2">
+      {messages
+        // .filter((message) => message.document === currentChatDocument)
+        .map((message, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              message.sender === "user" ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`max-w-[70%] p-3 rounded-lg ${
+                message.sender === "user" ? "bg-primary/10 text-right" : "bg-muted text-left"
+              }`}
+            >
+              {message.text}
+              {/* {message.sender === "bot" && chunkSource.length > 0 && (
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <strong>Sources:</strong>{" "}
+                  {chunkSource.map((source, idx) => (
+                    <span key={idx}>{source}</span>
+                  ))}
+                </div>
+              )} */}
+            </div>
+          </div>
+        ))}
+    </div>
+  </ScrollArea>
+  <form onSubmit={handleSendMessage} className="pt-4">
+    <div className="flex items-center">
+      <Textarea
+        name="message"
+        placeholder="Type your message..."
+        className="flex-grow mr-3"
+        disabled={loading} // Disable input when loading
+      />
+      <Button type="submit" disabled={loading} className="flex items-center justify-center">
+        {loading ? (
+          <div className="animate-spin h-5 w-5 border-t-2 border-primary rounded-full" />
+        ) : (
+          <BsSendFill className="text-2xl" />
+        )}
+      </Button>
+    </div>
+  </form>
+</CardContent>
+
+        </Card>
+
+        <Card className="w-1/3  p-1">
+  <CardHeader>
+    <CardTitle className="text-gray-700">{selectedPdf.name.length > 10 ? selectedPdf.name.slice(0, 10) + "...Pdf" : selectedPdf.name}
+    </CardTitle>
+  </CardHeader>
+  <CardContent className=' h-[90%]'>
+    <ScrollArea className="  h-full w-full">
+      <div className="  h-full flex justify-center">
+        <iframe
+          src={selectedPdf.url}
+          width="100%"
+          height="650"
+          title={selectedPdf.name}
+          frameBorder="0"
+        ></iframe>
+      </div>
+    </ScrollArea>
+  </CardContent>
+</Card>
+
+      </div>
+    </div>
+  )
+}
+
+
+
+
+
+// import { useState } from 'react'
+// import { Document, Page, pdfjs } from 'react-pdf'
+// import { Button } from "@/components/ui/button"
+// import { Textarea } from "@/components/ui/textarea"
+// import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+
+// import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+// import { ScrollArea } from "@/components/ui/scroll-area"
+// import { MessageCircle, X, FileText, LucideUpload } from 'lucide-react'
+// import { BsSendFill } from "react-icons/bs";
+// import { ImEmbed2 } from "react-icons/im";
+// import { WorkspaceService } from '@/services/documentService'
+
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+// } from "@/components/ui/dialog";
+// import { Input } from '@/components/ui/input'
+// import { Label} from "@/components/ui/label"
+// import { FaPlus } from 'react-icons/fa'
+// import { useParams } from 'react-router-dom'
+// // import { Spinner } from "@material-tailwind/react";
+// // import {queryKeys} from "@/services/WorkspaceService"
+
+
+// pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`
+
+// // Dummy PDF URL
+// // const DUMMY_PDF_URL = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+
+// interface PDFFile {
+//   name: string;
+//   url: string | File;
+// }
+
+// interface Message {
+//   text: string;
+//   sender: 'user' | 'bot';
+//   document: string;
+// }
+
+// export default function Chatwithdoc() {
+//   const [pdfFiles, setPdfFiles] = useState<PDFFile[]>([{ name: '', url: '' }])
+//   const [selectedPdf, setSelectedPdf] = useState<PDFFile>(pdfFiles[0])
+//   const [numPages, setNumPages] = useState<number | null>(null)
+//   const [messages, setMessages] = useState<Message[]>([])
+//   const [currentChatDocument, setCurrentChatDocument] = useState<string>(pdfFiles[0].name)
+//   const [isDialogOpen, setIsDialogOpen] = useState(false);
+//   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+//   const { slug } = useParams<{ slug: string }>();
+
+
+
+  
+//   // Extract the files array from the response
+//   // const documents = documentsData?.data?.workspaceFiles || [];
+  
+//   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     setSelectedFile(event.target.files?.[0] || null);
+//   };
+
+  
+
+  
+
+
+//   const embedPdf = async (pdf: PDFFile) => {
+//     // Simulating API call with a delay
+//     // await new Promise(resolve => setTimeout(resolve, 3000))
+
+//     // Update the PDF file status
+//     // setPdfFiles(prev => prev.map(p =>
+//     //   p.name === pdf.name ? { ...p, isEmbedding: false, isEmbedded: true } : p
+//     // ))
+
+//     // toast({
+//     //   title: "Embedding Complete",
+//     //   description: `${pdf.name} has been successfully embedded.`,
+//     // })
+//   }
+
+//   const  getPdf = async ()=>{
+//     const files = await WorkspaceService.getSystemFiles();
+//     console.log("filesnew:" , files);
+ 
+//   }
+
+//   const handleUploadPdf = async() => {
+//     if (selectedFile ) {
+//       const result = await WorkspaceService.uploadPdf(selectedFile);
+
+//     }
+//     setIsDialogOpen(false)
+//     setSelectedFile(null)
+//   };
+
+//   const handleDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+//     setNumPages(numPages)
+//   }
+
+//   const handleSendMessage = (event: React.FormEvent<HTMLFormElement>) => {
+//     event.preventDefault()
+//     const formData = new FormData(event.currentTarget)
+//     const message = formData.get('message') as string
+//     if (message.trim()) {
+//       setMessages(prev => [...prev, { text: message, sender: 'user', document: currentChatDocument }])
+//       // Here you would typically send the message to your backend
+//       // and receive a response. For now, we'll just simulate a response.
+//       setTimeout(() => {
+//         setMessages(prev => [...prev, {
+//           text: `This is a placeholder response for ${currentChatDocument}.`,
+//           sender: 'bot',
+//           document: currentChatDocument
+//         }])
+//       }, 1000)
+//       event.currentTarget.reset()
+//     }
+//   }
+
+//   const removePdf = (pdfToRemove: PDFFile) => {
+//     setPdfFiles(prev => prev.filter(pdf => pdf !== pdfToRemove))
+//     if (selectedPdf === pdfToRemove) {
+//       setSelectedPdf(pdfFiles[0])
+//       setCurrentChatDocument(pdfFiles[0].name)
+//     }
+//   }
+
+//   const selectPdf = (pdf: PDFFile) => {
+//     setSelectedPdf(pdf)
+//     setCurrentChatDocument(pdf.name)
+//   }
+
+
+//   return (
+//     <div className="    w-full  h-full overflow-y-auto mx-auto p-8 mt-4">
+//       <h1 className="  text-gray-700  text-2xl font-bold mb-4"> Chat With Document</h1>
+//       <div className="  flex    gap-8 w-full h-[90%] pt-4  " >
+//         {/* <Card   >
+//           <CardHeader>
+//             <CardTitle className="  text-gray-700 ">Upload Documents</CardTitle>
+//           </CardHeader>
+//           <CardContent>
+//           <label
+//         htmlFor="pdf-upload"
+//         className="cursor-pointer text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 w-full"
+//       >
+//         Choose PDF
+//       </label>
+//       <input
+//         id="pdf-upload"
+//         type="file"
+//         accept=".pdf"
+//         onChange={handleFileChange}
+//         multiple
+//         className="hidden"
+//       />      
+//             <ScrollArea className="h-full w-full mt-4">
+//               {pdfFiles.length > 1 && pdfFiles.map((pdf, index) => (
+//                 <div key={index} className="flex items-center p-2 hover:bg-gray-100">
+//                   <Button
+//                     variant="ghost"
+//                     className={` ${pdf.name === "" ? 'hidden' : ''} flex-grow justify-start mr-2 ${pdf === selectedPdf ? 'bg-primary/10' : ''}`}
+//                     onClick={() => selectPdf(pdf)}
+//                   >
+//                     <FileText className="h-4 w-4 mr-2" />
+//                     {pdf.name.length > 10 ? pdf.name.slice(0, 10) + "..." : pdf.name}
+//                     </Button>
+//                   <div className="flex items-center space-x-1">
+//                     {index !== 0 && (
+//                       <div className='flex justify-between'>
+//                                               <Button
+//                         variant="ghost"
+//                         size="icon"
+//                         // onClick={() => embedPdf(pdf)}
+//                         onClick={() => getPdf()}     
+
+//                         // aria-label={`Remove ${pdf.name}`}
+//                       >
+//                       <ImEmbed2 className="h-6 w-6" />
+//                       </Button>
+//                       <Button
+//                         variant="ghost"
+//                         size="icon"
+//                         onClick={() => removePdf(pdf)}
+//                         aria-label={`Remove ${pdf.name}`}
+//                       >
+//                         <X className="h-6 w-6" />
+//                       </Button>
+
+                      
+//                       </div>
+
+//                     )}
+//                   </div>
+//                 </div>
+//               ))}
+//             </ScrollArea>
+//           </CardContent>
+//         </Card> */}
+//         <Card   >
+//           <CardHeader>
+//             <Dialog 
+//             open={isDialogOpen} onOpenChange={setIsDialogOpen}
+//             >
+//               <DialogTrigger asChild>
+//                 <Button className=" m-4">
+//                   <FaPlus className="mr-1" />
+//                   Add Document
+//                 </Button>
+//               </DialogTrigger>
+//               <DialogContent className="h-80 sm:max-w-[425px]">
+//                 <DialogHeader>
+//                   <DialogTitle>Upload File</DialogTitle>
+//                 </DialogHeader>
+//                 <div className="flex flex-col mt-2 items-center justify-center space-y-2 border h-36 rounded-lg cursor-pointer">
+//                   {selectedFile ? (
+//                     <div className="text-center">
+//                       <p className="text-sm font-semibold">
+//                         {selectedFile.name}
+//                       </p>
+//                       <p className="text-xs text-gray-500">
+//                         {(selectedFile.size / 1024).toFixed(2)} KB
+//                       </p>
+//                     </div>
+//                   ) : (
+//                     <>
+//                       <Label htmlFor="pdfUpload">
+//                         <LucideUpload className="h-8 w-8 text-gray-500" />
+//                       </Label>
+//                       <Input
+//                         id="pdfUpload"
+//                         type="file"
+//                         style={{ display: "none" }}
+//                         onChange={handleFileChange}
+//                       />
+//                       <p className="text-sm text-gray-500">Upload Here</p>
+//                     </>
+//                   )}
+//                 </div>
+//                 <DialogFooter>
+//                   {/* {uploadPdfMutation.isLoading && <Spinner/>} */}
+//                   <Button
+//                     type="submit"
+//                     onClick={handleUploadPdf}
+//                   >
+//                     Submit
+//                   </Button>
+//                 </DialogFooter>
+//               </DialogContent>
+//             </Dialog>          </CardHeader>
+//           <CardContent>
+//           {/* <label
+//         htmlFor="pdf-upload"
+//         className="cursor-pointer text-white bg-blue-500 px-4 py-2 rounded-md hover:bg-blue-600 w-full"
+//       >
+//         Choose PDF
+//       </label>
+//       <input
+//         id="pdf-upload"
+//         type="file"
+//         accept=".pdf"
+//         onChange={handleFileChange}
+//         multiple
+//         className="hidden"
+//       />       */}
+//             <ScrollArea className="h-full w-full mt-4">
+//               {pdfFiles.length > 1 && pdfFiles.map((pdf, index) => (
+//                 <div key={index} className="flex items-center p-2 hover:bg-gray-100">
+//                   <Button
+//                     variant="ghost"
+//                     className={` ${pdf.name === "" ? 'hidden' : ''} flex-grow justify-start mr-2 ${pdf === selectedPdf ? 'bg-primary/10' : ''}`}
+//                     onClick={() => selectPdf(pdf)}
+//                   >
+//                     <FileText className="h-4 w-4 mr-2" />
+//                     {pdf.name.length > 10 ? pdf.name.slice(0, 10) + "..." : pdf.name}
+//                     </Button>
+//                   <div className="flex items-center space-x-1">
+//                     {index !== 0 && (
+//                       <div className='flex justify-between'>
+//                                               <Button
+//                         variant="ghost"
+//                         size="icon"
+//                         // onClick={() => embedPdf(pdf)}
+//                         onClick={() => getPdf()}     
+
+//                         // aria-label={`Remove ${pdf.name}`}
+//                       >
+//                       <ImEmbed2 className="h-6 w-6" />
+//                       </Button>
+//                       <Button
+//                         variant="ghost"
+//                         size="icon"
+//                         onClick={() => removePdf(pdf)}
+//                         aria-label={`Remove ${pdf.name}`}
+//                       >
+//                         <X className="h-6 w-6" />
+//                       </Button>
+
+                      
+//                       </div>
+
+//                     )}
+//                   </div>
+//                 </div>
+//               ))}
+//             </ScrollArea>
+//           </CardContent>
+//         </Card> 
+//         <Card className='w-1/2'>
+//           <CardHeader>
+//             <CardTitle className="  text-gray-700 "> {currentChatDocument.length > 10 ? currentChatDocument.slice(0, 10) + "...Pdf" : currentChatDocument}
+//             </CardTitle>
+//           </CardHeader>
+//           <CardContent className='  h-[80%]'>
+//             <ScrollArea className="h-full   w-full pr-4">
+//               {messages
+//                 .filter(message => message.document === currentChatDocument)
+//                 .map((message, index) => (
+//                   <div key={index} className={`mb-2 ${message.sender === 'user' ? 'text-right' : 'text-left'}`}>
+//                     <span className={`inline-block p-2 rounded ${message.sender === 'user' ? 'bg-primary/10' : 'bg-muted'}`}>
+//                       {message.text}
+//                     </span>
+//                   </div>
+//                 ))}
+//             </ScrollArea>
+//             <form onSubmit={handleSendMessage} className="pt-4">
+//               <div className="flex">
+//                 <Textarea name="message" placeholder="Type your message..." className="flex-grow mr-3" />
+//                 {/* <Button type="submit">Send</Button> */}
+//                 <button type='submit'>                <BsSendFill className='text-2xl' />
+//                 </button>
+//               </div>
+//             </form>
+//           </CardContent>
+//         </Card>
+
+//         <Card className="w-1/3  p-1">
+//   <CardHeader>
+//     <CardTitle className="text-gray-700">{selectedPdf.name.length > 10 ? selectedPdf.name.slice(0, 10) + "...Pdf" : selectedPdf.name}
+//     </CardTitle>
+//   </CardHeader>
+//   <CardContent className=' h-[90%]'>
+//     <ScrollArea className="  h-full w-full">
+//       <div className="  h-full flex justify-center">
+//         <iframe
+//           src={selectedPdf.url}
+//           width="100%"
+//           height="650"
+//           title={selectedPdf.name}
+//           frameBorder="0"
+//         ></iframe>
+//       </div>
+//     </ScrollArea>
+//   </CardContent>
+// </Card>
+
+//       </div>
+//     </div>
+//   )
+// }

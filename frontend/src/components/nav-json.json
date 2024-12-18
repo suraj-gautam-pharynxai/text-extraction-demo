@@ -1,0 +1,265 @@
+{
+  "desktopNav": [
+    {
+      "text": "PDF TO FORM",
+      "link": "/pdf-to-form"
+    },
+
+    {
+      "text": "PDF CHAT",
+      "link": "/chat-with-doc"
+    },
+    {
+      "text": "IMAGE CHAT",
+      "link": "/chat-with-invoice"
+    },
+    {
+      "text": "MERGE PDF",
+      "link": "/merge-pdf"
+    },
+    {
+      "text": "SPLIT PDF",
+      "link": "/split-pdf"
+    },
+    {
+      "text": "COMPRESS PDF",
+      "link": "/compress-pdf"
+    }
+    
+    
+  ],
+    "convertDropdown": [
+      {
+        "title": "CONVERT TO PDF",
+        "items": [
+          {
+            "text": "JPG to PDF",
+            "link": "/jpg-to-pdf",
+            "icon": "jpgToPdf"
+          },
+          {
+            "text": "WORD to PDF",
+            "link": "/word-to-pdf",
+            "icon": "wordToPdf"
+          },
+          {
+            "text": "POWERPOINT to PDF",
+            "link": "/powerpoint-to-pdf",
+            "icon": "powerPointToPdf"
+          },
+          {
+            "text": "EXCEL to PDF",
+            "link": "/xls-to-pdf",
+            "icon": "ExcelToPdf"
+          },
+          {
+            "text": "HTML to PDF",
+            "link": "/html-to-pdf",
+            "icon": "htmlToPdf"
+          }
+        ]
+      },
+      {
+        "title": "CONVERT FROM PDF",
+        "items": [
+          {
+            "text": "PDF to JPG",
+            "link": "/pdf-to-jpg",
+            "icon": "pdfToJpg"
+          },
+          {
+            "text": "PDF to WORD",
+            "link": "/pdf-to-word",
+            "icon": "pdfToWord"
+          },
+          {
+            "text": "PDF to POWERPOINT",
+            "link": "/pdf-to-powerpoint",
+            "icon": "pdfToPowerpoint"
+          },
+          {
+            "text": "PDF to EXCEL",
+            "link": "/pdf-to-excel",
+            "icon": "pdfToExcel"
+          },
+          {
+            "text": "PDF to PDF/A",
+            "link": "/pdf-to-pdfa",
+            "icon": "pdfToPdfA"
+          }
+        ]
+      }
+    ],
+  "toolsDropdown": [
+    {
+      "title": "ORGANIZE PDF",
+      "items": [
+        {
+          "text": "EXTRACT PDF",
+          "link": "/extract-pdf",
+          "icon": "mergePdf"
+        },
+        {
+          "text": "SPLIT PDF",
+          "link": "/Split-pdf",
+          "icon": "splitPdf"
+        },
+        {
+          "text": "REMOVE PAGES",
+          "link": "/remove-pages",
+          "icon": "removePages"
+        },
+        {
+          "text": "EXTRACT PDF",
+          "link": "/extract-pdf",
+          "icon": "mergePdf"
+        },
+        {
+          "text": "ORGANIZE PDF",
+          "link": "/organize-pdf",
+          "icon": "organizePdf"
+        },
+        {
+          "text": "SCAN TO PDF",
+          "link": "/scantopdf",
+          "icon": "scanPdf"
+        }
+      ]
+    },
+    {
+      "title": " OPTIMIZE PDF",
+      "items": [
+        {
+          "text": "COMPRESS PDF",
+          "link": "/compress-pdf",
+          "icon": "compressPdf"
+        },
+        {
+          "text": "REPAIR PDF",
+          "link": "/repair-pdf",
+          "icon": "repairPdf"
+        },
+        {
+          "text": "OCR PDF",
+          "link": "/ocr-pdf",
+          "icon": "ocrPdf"
+        }
+      ]
+    },
+    {
+      "title": "CONVERT TO PDF",
+      "items": [
+        {
+          "text": "JPG to PDF",
+          "link": "/jpg-to-pdf",
+          "icon": "jpgToPdf"
+        },
+        {
+          "text": "WORD to PDF",
+          "link": "/word-to-pdf",
+          "icon": "wordToPdf"
+        },
+        {
+          "text": "POWERPOINT to PDF",
+          "link": "/powerpoint-to-pdf",
+          "icon": "powerPointToPdf"
+        },
+        {
+          "text": "EXCEL to PDF",
+          "link": "/xls-to-pdf",
+          "icon": "ExcelToPdf"
+        },
+        {
+          "text": "HTML to PDF",
+          "link": "/html-to-pdf",
+          "icon": "htmlToPdf"
+        }
+      ]
+    },
+    {
+      "title": "CONVERT FROM PDF",
+      "items": [
+        {
+          "text": "PDF to JPG",
+          "link": "/pdf-to-jpg",
+          "icon": "pdfToJpg"
+        },
+        {
+          "text": "PDF to WORD",
+          "link": "/pdf-to-word",
+          "icon": "pdfToWord"
+        },
+        {
+          "text": "PDF to POWERPOINT",
+          "link": "/pdf-to-powerpoint",
+          "icon": "pdfToPowerpoint"
+        },
+        {
+          "text": "PDF to EXCEL",
+          "link": "/pdf-to-excel",
+          "icon": "pdfToExcel"
+        },
+        {
+          "text": "PDF to PDF/A",
+          "link": "/pdf-to-pdfa",
+          "icon": "pdfToPdfA"
+        }
+      ]
+    },
+    {
+      "title": "EDIT PDF",
+      "items": [
+        {
+          "text": "ROTATE PDF",
+          "link": "/rotate-to-jpg",
+          "icon": "rotatePdf"
+        },
+        {
+          "text": "ADD PAGE NUMBERS",
+          "link": "/add-page-numbar",
+          "icon": "pageNumber"
+        },
+        {
+          "text": "ADD WATERMARK",
+          "link": "/add-watermark",
+          "icon": "waterMark"
+        },
+        {
+          "text": "EDIT PDF",
+          "link": "/edit-pdf",
+          "icon": "editPdf"
+        }
+      ]
+    },
+    {
+      "title": "PDF SECURITY",
+      "items": [
+        {
+          "text": "UNLOCK PDF",
+          "link": "/unlock-pdf",
+          "icon": "unlockPdf"
+        },
+        {
+          "text": "PROTECT PDF",
+          "link": "/protact-pdf",
+          "icon": "protactPdf"
+        },
+        {
+          "text": "SIGN PDF",
+          "link": "/sign-pdf",
+          "icon": "signPdf"
+        },
+        {
+          "text": "REDACT PDF",
+          "link": "/redact-pdf",
+          "icon": "redactPdf"
+        },
+        {
+          "text": "COMPARE PDF",
+          "link": "/compaire-pdf",
+          "icon": "comparePdf"
+        }
+      ]
+    }
+  ]
+}
