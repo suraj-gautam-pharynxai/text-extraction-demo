@@ -31,8 +31,6 @@ const FromToEXcel = () => {
                     }
                 );
                 console.log('File uploaded successfully:', response.data.extracted_data);
-                // setPdfUrl(response.data.pdf_url);
-                // console.log("pdfUrl:", response.data.pdf_url);
 
                 setInitialData(response.data.extracted_data);
 
@@ -47,7 +45,7 @@ const FromToEXcel = () => {
 
     return (
         <>
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="f min-h-screen">
 
                 {isLoading && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-gray-200 bg-opacity-75">
@@ -90,11 +88,11 @@ const FromToEXcel = () => {
                         </DragDrop>
                     ) : (
                         <div className="bg-[#f2f2f2] pt-0 w-screen">
-                            <div className="flex flex-col lg:flex-row justify-between mt-[2rem] gap-2">
+                            <div className="flex flex-col lg:flex-row justify-between  gap-2">
 
                                 {/* Second div (form data display) */}
-                                <div className="flex flex-col items-center w-full  border border-[#a6a6a6] bg-white gap-2 min-h-[95vh] relative">
-                                    <div className="px-[0rem] pt-8 flex flex-col w-[100%]">
+                                <div className="flex flex-col items-center w-full  border border-[#a6a6a6] bg-white gap-2  relative">
+                                    <div className="px-[0rem] flex flex-col w-[100%]">
                                         <p className="text-[1.6rem] text-center font-medium p-2">
                                             Form Details
                                         </p>
