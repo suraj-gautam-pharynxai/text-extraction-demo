@@ -8,7 +8,7 @@ from fpdf import FPDF
 import pandas as pd
 
 
-api_key = ""
+api_key = "sk-proj-ogfIAVfTiN6775hkmgQqT3BlbkFJkKWaIN9BSV7g4JxUOau7"
 client = OpenAI(api_key=api_key)
 
 
