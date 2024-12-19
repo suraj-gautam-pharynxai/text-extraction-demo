@@ -54,8 +54,20 @@ def extract_text_from_pdf( file: UploadFile = File(...)):
         print("errr----",e)
         raise HTTPException(status_code=500, detail=f"An error occurred while processing the PDF: {str(e)}")
 
+
+@app.get("/")
+def base_function():
+    return "hello world"
+
 app.include_router(router)
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=7011)
