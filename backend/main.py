@@ -1,6 +1,6 @@
 from importlib import reload
 from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException, Depends
-
+from fastapi.middleware.cors import CORSMiddleware
 import io
 import base64
 import json
@@ -14,6 +14,16 @@ from utills.blobservice import azure_blob_manager
 # Initialize the FastAPI app
 app = FastAPI()
 router = APIRouter()
+
+origins = ["*"]
+ 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 # Replace with your Azure Blob Storage connection string and container name
 AZURE_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=transcribedblobstorage;AccountKey=1Z7yKPP5DLbxnoHdh7NmHgwg3dFLaDiYHUELdid7dzfzR6/DvkZnnzpJ30lrXIMhtD5GYKo+71jP+AStC1TEvA==;EndpointSuffix=core.windows.net"
