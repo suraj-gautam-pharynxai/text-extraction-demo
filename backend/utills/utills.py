@@ -270,4 +270,4 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
     ]
     # Default to a generic prompt if index exceeds the list length
     # return prompts[0] if index < len(prompts) else {"prompt": "Generic prompt", "data": []}
-    return prompts[1]
+    return prompts[0]
