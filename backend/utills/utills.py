@@ -7,8 +7,20 @@ from fastapi.responses import FileResponse
 from fpdf import FPDF
 import pandas as pd
 
+from dotenv import load_dotenv
+import os
 
-api_key = "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"
+# Load environment variables from .env file
+load_dotenv()
+
+# Access variables
+app_env = os.getenv("APP_ENV")
+debug = os.getenv("DEBUG")
+api_key = os.getenv("OPENAI_KEY")
+
+print("api key", api_key)
+
+# api_key = ""
 client = OpenAI(api_key=api_key)
 
 
