@@ -92,7 +92,7 @@ def get_extraction_prompt(index):
     prompts = [
         {
             "prompt": """
-Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
+Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value, written next to key**. Follow these instructions to ensure no information is missed:
 
 see in the Name of Borrower value do not include the words which is strikethrough or crossed out words
 
