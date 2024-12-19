@@ -21,7 +21,7 @@ const FromToEXcel = () => {
 
             try {
                 const response = await axios.post(
-                    "https://buddy.pharynxai.in/pharynxocrbackend/chat_img/extract-form-data",                    
+                    "https://buddy.pharynxai.in/akashabackend/extract-form-data",                    
                     // "https://severely-feasible-swan.ngrok-free.app/chat_img/extract-form-data",
                     formData,
                     {
