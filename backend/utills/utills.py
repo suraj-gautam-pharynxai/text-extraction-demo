@@ -57,23 +57,54 @@ def flatten_json(nested_json):
     return flat_json
 
 
-def extract_text_from_image_openai(encoded_image: str, text:str):
+# def extract_text_from_image_openai(encoded_image: str, text:str):
+#     try:
+#         response = client.chat.completions.create(
+#             model="gpt-4o",
+#             messages=[  {
+#             "role": "system",
+#             "content": "You are a highly skilled data extraction expert. Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value** with precision. Follow these instructions to ensure no information is missed:"
+#         },
+#                 {
+#                     "role": "user",
+#                     "content": [
+#                         {"type": "text", "text": text},
+#                         {
+#                             "type": "image_url",
+#                             "image_url": {
+#                                 "url": f"data:image/jpeg;base64,{encoded_image}",
+#                             },
+#                         },
+#                     ],
+#                 }
+#             ],
+#             max_tokens=1000,
+#         )
+        
+#         if response.choices:
+#             return response.choices[0].message.content
+#         else:
+#             raise HTTPException(status_code=500, detail="Failed to extract text from image.")
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=f"Error during API call: {str(e)}")
+
+
+def extract_text_from_image_openai(image_url: str, text: str):
     try:
         response = client.chat.completions.create(
             model="gpt-4o",
-            messages=[  {
-            "role": "system",
-            "content": "You are a highly skilled data extraction expert. Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value** with precision. Follow these instructions to ensure no information is missed:"
-        },
+            messages=[
+                {
+                    "role": "system",
+                    "content": "You are a highly skilled data extraction expert. Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value** with precision. Follow these instructions to ensure no information is missed:"
+                },
                 {
                     "role": "user",
                     "content": [
                         {"type": "text", "text": text},
                         {
                             "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/jpeg;base64,{encoded_image}",
-                            },
+                            "image_url": {"url": image_url},  # Use the direct image URL here
                         },
                     ],
                 }
@@ -87,6 +118,7 @@ def extract_text_from_image_openai(encoded_image: str, text:str):
             raise HTTPException(status_code=500, detail="Failed to extract text from image.")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error during API call: {str(e)}")
+
 
 def get_extraction_prompt(index):
     prompts = [
