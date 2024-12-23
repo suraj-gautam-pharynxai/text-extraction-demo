@@ -7,9 +7,6 @@ from typing import Generator
 from concurrent.futures import ThreadPoolExecutor
 import io
 import json
-
-
-# Assuming these modules exist in your project
 from utills.utills import get_extraction_prompt, extract_text_from_image_openai
 from utills.blobservice import azure_blob_manager
 
@@ -122,6 +119,7 @@ def extract_text_from_pdf(file: UploadFile = File(...)):
     except Exception as e:
         print("Error:", e)
         raise HTTPException(status_code=500, detail=f"An error occurred while processing the PDF: {str(e)}")
+
 @app.get("/")
 def base_function():
     return "hello world"
