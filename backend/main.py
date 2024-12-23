@@ -19,51 +19,16 @@ origins = ["*"]
  
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allows all origins
+    allow_origins=origins,  
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
-# Replace with your Azure Blob Storage connection string and container name
+
 AZURE_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=transcribedblobstorage;AccountKey=1Z7yKPP5DLbxnoHdh7NmHgwg3dFLaDiYHUELdid7dzfzR6/DvkZnnzpJ30lrXIMhtD5GYKo+71jP+AStC1TEvA==;EndpointSuffix=core.windows.net"
-# CONTAINER_NAME = "akasa"
 CONTAINER_NAME = "ai-rep-platform"
 
-# @router.post("/extract-form-data")
-# def extract_text_from_pdf( file: UploadFile = File(...)):
-#     if file.content_type != "application/pdf":
-#         raise HTTPException(status_code=400, detail="Invalid file type. Only PDFs are accepted.")
-#     pdf_data = file.file.read()
-#     try:
-#         images = convert_from_bytes(pdf_data)
-#         all_extracted_data = []
-#         for idx, image in enumerate(images):
-#             buffer = io.BytesIO()
-#             image.save(buffer, format="JPEG")
-#             buffer.seek(0)
-#             image_name = f"{file.filename.split('.')[0]}_page_{idx + 1}.jpg"
-#             print("images",image_name)
-#             image_url = azure_blob_manager.upload_file(blob_name=image_name, file=buffer.getvalue())
-            
-#             # encoded_image = base64.b64encode(buffer.getvalue()).decode("utf-8")
-#             prompt_object = get_extraction_prompt(idx)
-#             page_prompt = prompt_object["prompt"]
-#             print(idx,"page_prompt",page_prompt)
-
-#             # extracted_text_openai = extract_text_from_image_openai(encoded_image, page_prompt)
-#             extracted_text_openai = extract_text_from_image_openai(image_url, page_prompt)
-
-#             extracted_text_openai = extracted_text_openai.replace("```", "").replace("```json", "").replace("json", "")
-#             json_data = json.loads(extracted_text_openai)
-
-#             all_extracted_data.append({"page": idx + 1, "url":image_url, "data": json_data})
-
-#         return {"extracted_data": all_extracted_data}
-    
-#     except Exception as e:
-#         print("errr----",e)
-#         raise HTTPException(status_code=500, detail=f"An error occurred while processing the PDF: {str(e)}")
 
 def process_page(image, idx, file_name):
     """Process a single page of the PDF."""
