@@ -1,4 +1,5 @@
 from importlib import reload
+import uvicorn
 from fastapi import FastAPI, APIRouter, UploadFile, File, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
@@ -45,14 +46,19 @@ def process_page(image, idx, file_name):
         # Generate prompt for the page
         prompt_object = get_extraction_prompt(idx)
         page_prompt = prompt_object["prompt"]
-        print(idx, "Page prompt:", page_prompt)
+        print(idx, "__________ Page prompt:", page_prompt)
 
         # Extract text using OpenAI
         extracted_text_openai = extract_text_from_image_openai(image_url, page_prompt)
-        extracted_text_openai = extracted_text_openai.replace("```", "").replace("```json", "").replace("json", "")
-        json_data = json.loads(extracted_text_openai)
+        print(f"Extracted text for page {idx + 1}: {extracted_text_openai}")
 
-        return {"page": idx + 1, "url": image_url, "data": json_data}
+    
+        if(extracted_text_openai):
+            extracted_text_openai = extracted_text_openai.replace("```", "").replace("```json", "").replace("json", "")
+            json_data = json.loads(extracted_text_openai)
+            return {"page": idx + 1, "url": image_url, "data": json_data}
+        else:
+            return {"page": idx + 1, "url": image_url, "data": "empty"}
     except Exception as e:
         print(f"Error processing page {idx + 1}: {e}")
         raise e
@@ -61,16 +67,11 @@ def process_page(image, idx, file_name):
 def extract_text_from_pdf(file: UploadFile = File(...)):
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Invalid file type. Only PDFs are accepted.")
-    
     pdf_data = file.file.read()
     try:
-        # Convert PDF to images
         images = convert_from_bytes(pdf_data)
         file_name = file.filename.split('.')[0]
-        
         all_extracted_data = []
-
-        # Use ThreadPoolExecutor for parallel processing
         with ThreadPoolExecutor(max_workers=3) as executor:
             futures = [
                 executor.submit(process_page, image, idx, file_name)
@@ -78,9 +79,7 @@ def extract_text_from_pdf(file: UploadFile = File(...)):
             ]
             for future in futures:
                 all_extracted_data.append(future.result())
-
         return {"extracted_data": all_extracted_data}
-    
     except Exception as e:
         print("Error:", e)
         raise HTTPException(status_code=500, detail=f"An error occurred while processing the PDF: {str(e)}")
@@ -91,13 +90,13 @@ def base_function():
 
 app.include_router(router)
 
-
-
-
-
-
-
-
 if __name__ == "__main__":
-    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=7011)
+    
+    
+    
+    
+    
+
+# if __name__ == '__main__':
+#     uvicorn.run("main:app", host="0.0.0.0", port=6512, reload=True)
