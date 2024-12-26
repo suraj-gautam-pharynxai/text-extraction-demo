@@ -592,57 +592,73 @@ note: Given a scanned or photographed form, identify and extract the values from
 """,
             "data": ["key1", "key2", "key3"]
       },
+
+##########11jpg
 {
             "prompt": """
-Carefully analyze the provided image of a printed form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
-
-Note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
-
+Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
+ 
+note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
+ 
 1. **Output Format**:
    - Return the data as a single, flat JSON object.
    - Each field (key) and its corresponding value should be presented as a key-value pair. Do not use nested JSON objects.
-
+ 
 2. **Critical Fields (Mandatory)**:
    - Extract the following fields with absolute accuracy, regardless of their location on the form:
-        - **Government Entity Name**
-        - **Department Name**
-        - **Location (City, State)**
-        - **Receipt/Appl No.**
-        - **Vehicle Class**
-        - **Received From**
-        - **Receipt Date**
+        - **Logo**
+        - **Document Title**
+        - **Header Notes**
+        - **Name of Supplier**
+        - **Authorised Dealer Details (including contact and GSTIN)**
+        - **Invoice No.**
+        - **Invoice Date**
+        - **Bill of Supply**
+        - **Name of Buyer**
+        - **Buyer's GSTIN No.**
+        - **Buyer's Address**
+        - **Contact No. (R), (O), (M)**
+        - **H.P.A./H.Y.P. with**
+        - **Description of Item (with fields for UOM, HSN Code, QTY, Rate, and Basic)**
         - **Chassis No.**
-        - **Financer Name**
-        - **Bank Ref No.**
-        - **Vehicle No.**
-        - **Sale Amount**
-        - **Transaction ID**
-        - **Service Type**
-        - **Particulars (with Amount, Rebate/Waiver, Fine/Penalty/A, and Total)**
-        - **Grand Total (in Rs.)**
-        - **Printed On**
-        - **Remarks**
-        - **Signature Name**
-        - **Dealer Name**
+        - **Engine No.**
+        - **Colour**
+        - **Battery No.**
+        - **Mfg. Year**
+        - **OM No.**
+        - **CNG/PRV No.**
+        - **Total GST Amount in Word**
+        - **Total Amount Payable in Word**
+        - **Discount**
+        - **Total Taxable Amount**
+        - **CGST Amount and Rate**
+        - **SGST Amount and Rate**
+        - **IGST Amount and Rate**
+        - **Total GST Amount**
+        - **Gross Amount**
+        - **Ref**
+        - **Terms & Conditions (all points)**
+        - **Authorised Signatory Name**
    - These fields are essential and must be included in the output, even if they are less prominent or written in an unusual format.
-
+ 
 3. **Other Fields**:
    - Extract all additional fields and their values, such as:
-     - **Government Logo Presence (if visible)**,
-     - **Any additional Notes or Instructions**, etc.
+     - **Logo or branding text**
+     - **Additional notes or disclaimers**
    - Do not skip any visible key-value pairs, whether printed, handwritten, or partially visible.
-
+ 
 4. **Positional Awareness**:
-   - Key-value pairs may appear at the top, sides, or bottom of the form.
+   -  Key-value pairs may appear at the top, sides, or bottom of the document.
    - Multiple key-value pairs may exist on a single line or across rows; ensure all are captured.
-
-5. **Extracting Non-Crossed-Out Values**:
-   - Select only values that are *not crossed out* (i.e., text without any marks or lines striking through it).
-   - Ignore any values that are visibly struck through with a pen or other markings. If all values for a field are crossed out, indicate 'No valid entry'.
+   
+ 
+6. **Extracting Non-Crossed-Out Values**:
+- Select only values that are *not crossed out** (i.e., text without any marks or lines striking through it). Ignore any values that are visibly struck through with a pen or other markings. If all values for a field are crossed out, indicate 'No valid entry'.such as:
+Field Name: Extracted Value.
 """,
             "data": ["key1", "key2", "key3"]
         },
-
+##########12jpg
 {
         "prompt": """Please extract all fields and their values from the following invoice image and provide the result as a JSON object. from the provided image. Note: please return only the json do not return any text other than json object and one more thing is do not make any sub json object of the main json object""",
         "data": []
