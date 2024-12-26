@@ -30,10 +30,10 @@ app.add_middleware(
 AZURE_STORAGE_CONNECTION_STRING = "DefaultEndpointsProtocol=https;AccountName=transcribedblobstorage;AccountKey=1Z7yKPP5DLbxnoHdh7NmHgwg3dFLaDiYHUELdid7dzfzR6/DvkZnnzpJ30lrXIMhtD5GYKo+71jP+AStC1TEvA==;EndpointSuffix=core.windows.net"
 CONTAINER_NAME = "ai-rep-platform"
 
-
 def process_page(image, idx, file_name):
     """Process a single page of the PDF."""
     try:
+        # Save the image to a buffer
         buffer = io.BytesIO()
         image.save(buffer, format="JPEG")
         buffer.seek(0)
@@ -42,26 +42,35 @@ def process_page(image, idx, file_name):
 
         # Upload image to Azure Blob
         image_url = azure_blob_manager.upload_file(blob_name=image_name, file=buffer.getvalue())
+        if not image_url:
+            raise ValueError("Image URL is empty. Azure Blob upload might have failed.")
 
         # Generate prompt for the page
         prompt_object = get_extraction_prompt(idx)
+        if "prompt" not in prompt_object:
+            raise ValueError(f"Prompt not found for index {idx}. Check get_extraction_prompt function.")
         page_prompt = prompt_object["prompt"]
         print(idx, "__________ Page prompt:", page_prompt)
 
         # Extract text using OpenAI
         extracted_text_openai = extract_text_from_image_openai(image_url, page_prompt)
-        print(f"Extracted text for page {idx + 1}: {extracted_text_openai}")
+        if not extracted_text_openai.strip():
+            print(f"No text extracted from OpenAI for page {idx + 1}.")
+            return {"page": idx + 1, "url": image_url, "data": {"no_key": "no value"}}
 
-    
-        if(extracted_text_openai):
+        # Clean and parse OpenAI response
+        try:
             extracted_text_openai = extracted_text_openai.replace("```", "").replace("```json", "").replace("json", "")
             json_data = json.loads(extracted_text_openai)
-            return {"page": idx + 1, "url": image_url, "data": json_data}
-        else:
-            return {"page": idx + 1, "url": image_url, "data": "empty"}
+        except json.JSONDecodeError as e:
+            print(f"Error decoding JSON for page {idx + 1}: {e}")
+            json_data = {"error": "Invalid JSON format in OpenAI response"}
+
+        return {"page": idx + 1, "url": image_url, "data": json_data}
+
     except Exception as e:
         print(f"Error processing page {idx + 1}: {e}")
-        raise e
+        return {"page": idx + 1, "url": "", "data": {"error": str(e)}}
 
 @router.post("/extract-form-data")
 def extract_text_from_pdf(file: UploadFile = File(...)):

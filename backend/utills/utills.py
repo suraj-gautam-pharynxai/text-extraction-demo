@@ -476,6 +476,8 @@ note: Given a scanned or photographed form, identify and extract the values from
      },
 
 ##########9jpg
+
+##########10jpg
 {
             "prompt": """
 Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
@@ -519,7 +521,7 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
             "data": ["key1", "key2", "key3"]
         },
 
-##########10jpg
+##########11jpg
 {
             "prompt": """
 Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
@@ -562,10 +564,18 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
 """,
             "data": ["key1", "key2", "key3"]
         },
-    
+
+##########12jpg  
+   
     ]
     
-    default="default prompt"
-    # Default to a generic prompt if index exceeds the list length
-    # return prompts[0] if index < len(prompts) else {"prompt": "Generic prompt", "data": []}
-    return prompts[index]
+    default_prompt = {
+        "prompt": """Please extract all fields and their values from the following invoice image and provide the result as a JSON object. from the provided image. Note: please return only the json do not return any text other than json object and one more thing is do not make any sub json object of the main json object""",
+        "data": []
+    }
+    
+    # Return the corresponding prompt or default if index is out of range
+    if 0 <= index < len(prompts):
+        return prompts[index]
+    else:
+        return default_prompt
