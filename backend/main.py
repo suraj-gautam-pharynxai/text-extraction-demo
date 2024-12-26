@@ -52,21 +52,21 @@ def process_page(image, idx, file_name):
         page_prompt = prompt_object["prompt"]
         print(idx, "__________ Page prompt:", page_prompt)
 
-        # Extract text using OpenAI
+        # Extract text using AI model
         extracted_text_openai = extract_text_from_image_openai(image_url, page_prompt)
        
         if not extracted_text_openai.strip():
-            print(f"No text extracted from OpenAI for page {idx + 1}.")
+            print(f"No text extracted from AI model for page {idx + 1}.")
             return {"page": idx + 1, "url": image_url, "data": {"no_key": "no value"}}
 
-        # Clean and parse OpenAI response
+        # Clean and parse AI model response
         try:
             extracted_text_openai = extracted_text_openai.replace("```", "").replace("```json", "").replace("json", "")
             print("xxxxxxx", extracted_text_openai)
             json_data = json.loads(extracted_text_openai)
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON for page {idx + 1}: {e}")
-            json_data = {"error": "Invalid JSON format in OpenAI response"}
+            json_data = {"error": "Invalid JSON format in AI model response"}
 
         return {"page": idx + 1, "url": image_url, "data": json_data}
 
