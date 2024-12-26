@@ -121,6 +121,7 @@ def extract_text_from_image_openai(image_url: str, text: str):
 
 def get_extraction_prompt(index):
     prompts = [
+#############1 jpg
 {
             "prompt": """
 Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value, written next to key**. Follow these instructions to ensure no information is missed:
@@ -518,7 +519,7 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
             "data": ["key1", "key2", "key3"]
         },
 
-##########9jpg
+##########10jpg
 {
             "prompt": """
 Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
@@ -561,6 +562,7 @@ Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and
 """,
             "data": ["key1", "key2", "key3"]
         },
+    
     ]
     
     default="default prompt"
