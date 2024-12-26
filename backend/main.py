@@ -54,6 +54,7 @@ def process_page(image, idx, file_name):
 
         # Extract text using OpenAI
         extracted_text_openai = extract_text_from_image_openai(image_url, page_prompt)
+       
         if not extracted_text_openai.strip():
             print(f"No text extracted from OpenAI for page {idx + 1}.")
             return {"page": idx + 1, "url": image_url, "data": {"no_key": "no value"}}
@@ -61,6 +62,7 @@ def process_page(image, idx, file_name):
         # Clean and parse OpenAI response
         try:
             extracted_text_openai = extracted_text_openai.replace("```", "").replace("```json", "").replace("json", "")
+            print("xxxxxxx", extracted_text_openai)
             json_data = json.loads(extracted_text_openai)
         except json.JSONDecodeError as e:
             print(f"Error decoding JSON for page {idx + 1}: {e}")
@@ -81,7 +83,7 @@ def extract_text_from_pdf(file: UploadFile = File(...)):
         images = convert_from_bytes(pdf_data)
         file_name = file.filename.split('.')[0]
         all_extracted_data = []
-        with ThreadPoolExecutor(max_workers=3) as executor:
+        with ThreadPoolExecutor(max_workers=12) as executor:
             futures = [
                 executor.submit(process_page, image, idx, file_name)
                 for idx, image in enumerate(images)

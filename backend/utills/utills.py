@@ -476,57 +476,127 @@ note: Given a scanned or photographed form, identify and extract the values from
      },
 
 ##########9jpg
-
+{
+            "prompt": """
+Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
+ 
+note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
+ 
+1. **Output Format**:
+   - Return the data as a single, flat JSON object.
+   - Each field (key) and its corresponding value should be presented as a key-value pair. Do not use nested JSON objects.
+ 
+2. **Critical Fields (Mandatory)**:
+   - Extract the following fields with absolute accuracy, regardless of their location on the form:
+       - **Logo**
+       - **Form Title**
+       - **Customer Details**
+       - **Phone Number**
+       - **Date of Birth**
+       - **Customer Name**
+       - **Address**
+       - **Landmark**
+       - **Pin Code**
+       - **Guarantor Details**
+       - **Guarantor Name**
+       - **Guarantor Phone Number**
+       - **Guarantor Address**
+       - **Guarantor Landmark**
+       - **Guarantor Pin Code**
+       - **Co-Borrower Details**
+       - **Co-Borrower Name**
+       - **Co-Borrower Phone Number**
+       - **Co-Borrower Address**
+       - **Co-Borrower Landmark**
+       - **Co-Borrower Pin Code**
+       - **Dealer Name**
+       - **Dealer City**
+       - **Scheme and Vehicle Details**
+       - **Vehicle Model**
+       - **Vehicle Price**
+       - **Loan Amount**
+       - **Tenure**
+       - **EMI Amount**
+       - **Insurance Charges**
+       - **Additional Notes or Remarks**
+   - These fields are essential and must be included in the output, even if they are less prominent or written in an unusual format.
+ 
+3. **Other Fields**:
+   - Extract all additional fields and their values, such as:
+     - **Any overwritten, handwritten, or alternative details provided**, **Additional instructions or remarks**, etc.
+   - Do not skip any visible key-value pairs, whether printed, handwritten, or partially visible.
+ 
+4. **Positional Awareness**:
+   - Key-value pairs may appear at the top, sides, or bottom of the document.
+   - Multiple key-value pairs may exist on a single line or across rows; ensure all are captured and corrected for any mismatches
+ 
+ 
+6. **Extracting Non-Crossed-Out Values**:
+   - Select only values that are **not crossed out** (i.e., text without any marks or lines striking through it).--important:** Ignore any values that are visibly struck through with a pen or other markings. If all values for a field are crossed out, indicate 'No valid entry'. such as:
+Field Name: Extracted Value.  
+ 
+If a field contains multiple values and one is crossed out, only return the non-crossed-out value. If all values are crossed out, leave the field blank or indicate 'No valid entry.
+ 
+""",
+            "data": ["key1", "key2", "key3"]
+        },
 ##########10jpg
 {
             "prompt": """
-Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
-
+Carefully analyze the provided image of a printed form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
+ 
 note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
-
+ 
 1. **Output Format**:
    - Return the data as a single, flat JSON object.
    - Each field (key) and its corresponding value should be presented as a key-value pair. Do not use nested JSON objects.
-
+ 
 2. **Critical Fields (Mandatory)**:
    - Extract the following fields with absolute accuracy, regardless of their location on the form:
-    #  - **SR. No.**
-    #  - **D.O.**
-    #  - **R.O.I.** (near "Financed Amount (a-b)")
-    #  - **Period** (near "E.M.I. Amount")
-    #  - **%**
+    - **Government Entity Name**
+    - **Department Name**
+    - **Location (City, State)**
+    - **Receipt/Appl No.**
+    - **Vehicle Class**
+    - **Received From**
+    - **Receipt Date**
+    - **Chassis No.**
+    - **Financer Name**
+    - **Bank Ref No.**
+    - **Vehicle No.**
+    - **Sale Amount**
+    - **Transaction ID**
+    - **Service Type**
+    - **Particulars (with Amount, Rebate/Waiver, Fine/Penalty/A, and Total)",**
+    - **Grand Total (in Rs.)**
+    - **Printed On**
+    - **Remarks**
+    - **Signature Name**
+    - **Dealer Name**
    - These fields are essential and must be included in the output, even if they are less prominent or written in an unusual format.
-
+ 
 3. **Other Fields**:
    - Extract all additional fields and their values, such as:
-     - **Sales Executive Name**, **File No**, **Dealer Name**, **Engine No**, **PAN No**, **Address**, etc.
+     - **Government Logo Presence (if visible)**
+     - **Any additional Notes or Instructions**  etc.
    - Do not skip any visible key-value pairs, whether printed, handwritten, or partially visible.
-
+ 
 4. **Positional Awareness**:
    - Key-value pairs may appear at the top, sides, or bottom of the form.
    - Multiple key-value pairs may exist on a single line or across rows; ensure all are captured.
-
-5. **Attention to Detail**:
-   - Carefully check all areas of the form, even those that appear less prominent.
-   - Verify the extraction of **critical fields** alongside all other visible fields.
-
+ 
+   
 6. **Extracting Non-Crossed-Out Values**:
-   - selecting only the values that are **not crossed out** (i.e., text without any marks or lines striking through it). - - important: **Ignore any values that are visibly struck through with a pen or other markings.** Return the results in a structured format, such as:
-Field Name: Extracted Value.
-
-If a field contains multiple values and one is crossed out, only return the non-crossed-out value. If all values are crossed out, leave the field blank or indicate 'No valid entry.
-
-Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and **%**, are extracted along with all other visible fields. Pay attention to fields that might be handwritten or located near key sections of the form.
+ - **Select only values that are *not crossed out** (i.e., text without any marks or lines striking through it).
+ - **Ignore any values that are visibly struck through with a pen or other markings. If all values for a field are crossed out, indicate 'No valid entry'
 """,
             "data": ["key1", "key2", "key3"]
-        },
-
-##########11jpg
+      },
 {
             "prompt": """
-Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
+Carefully analyze the provided image of a printed form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
 
-note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
+Note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
 
 1. **Output Format**:
    - Return the data as a single, flat JSON object.
@@ -534,40 +604,49 @@ note: Given a scanned or photographed form, identify and extract the values from
 
 2. **Critical Fields (Mandatory)**:
    - Extract the following fields with absolute accuracy, regardless of their location on the form:
-     - **SR. No.**
-     - **D.O.**
-     - **R.O.I.** (near "Financed Amount (a-b)")
-     - **Period** (near "E.M.I. Amount")
-     - **%**
+        - **Government Entity Name**
+        - **Department Name**
+        - **Location (City, State)**
+        - **Receipt/Appl No.**
+        - **Vehicle Class**
+        - **Received From**
+        - **Receipt Date**
+        - **Chassis No.**
+        - **Financer Name**
+        - **Bank Ref No.**
+        - **Vehicle No.**
+        - **Sale Amount**
+        - **Transaction ID**
+        - **Service Type**
+        - **Particulars (with Amount, Rebate/Waiver, Fine/Penalty/A, and Total)**
+        - **Grand Total (in Rs.)**
+        - **Printed On**
+        - **Remarks**
+        - **Signature Name**
+        - **Dealer Name**
    - These fields are essential and must be included in the output, even if they are less prominent or written in an unusual format.
 
 3. **Other Fields**:
    - Extract all additional fields and their values, such as:
-     - **Sales Executive Name**, **File No**, **Dealer Name**, **Engine No**, **PAN No**, **Address**, etc.
+     - **Government Logo Presence (if visible)**,
+     - **Any additional Notes or Instructions**, etc.
    - Do not skip any visible key-value pairs, whether printed, handwritten, or partially visible.
 
 4. **Positional Awareness**:
    - Key-value pairs may appear at the top, sides, or bottom of the form.
    - Multiple key-value pairs may exist on a single line or across rows; ensure all are captured.
 
-5. **Attention to Detail**:
-   - Carefully check all areas of the form, even those that appear less prominent.
-   - Verify the extraction of **critical fields** alongside all other visible fields.
-
-6. **Extracting Non-Crossed-Out Values**:
-   - selecting only the values that are **not crossed out** (i.e., text without any marks or lines striking through it). - - important: **Ignore any values that are visibly struck through with a pen or other markings.** Return the results in a structured format, such as:
-Field Name: Extracted Value.
-
-If a field contains multiple values and one is crossed out, only return the non-crossed-out value. If all values are crossed out, leave the field blank or indicate 'No valid entry.
-
-Ensure all fields, especially **SR. No.**, **D.O.**, **R.O.I.**, **Period**, and **%**, are extracted along with all other visible fields. Pay attention to fields that might be handwritten or located near key sections of the form.
+5. **Extracting Non-Crossed-Out Values**:
+   - Select only values that are *not crossed out* (i.e., text without any marks or lines striking through it).
+   - Ignore any values that are visibly struck through with a pen or other markings. If all values for a field are crossed out, indicate 'No valid entry'.
 """,
             "data": ["key1", "key2", "key3"]
         },
 
-##########12jpg  
-   
-    ]
+{
+        "prompt": """Please extract all fields and their values from the following invoice image and provide the result as a JSON object. from the provided image. Note: please return only the json do not return any text other than json object and one more thing is do not make any sub json object of the main json object""",
+        "data": []
+    }    ]
     
     default_prompt = {
         "prompt": """Please extract all fields and their values from the following invoice image and provide the result as a JSON object. from the provided image. Note: please return only the json do not return any text other than json object and one more thing is do not make any sub json object of the main json object""",
