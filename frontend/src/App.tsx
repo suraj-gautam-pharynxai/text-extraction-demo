@@ -4,7 +4,7 @@ import FromToEXcel from "./components/ChatwithForm";
 
 const App = () => {
   return (
-    <BrowserRouter basename="/pharynxvision">
+    <BrowserRouter basename="/akasa">
       <FromToEXcel/>
     </BrowserRouter>
 

@@ -10,8 +10,8 @@ export default defineConfig({
     },
   },
   server:{
-    port:7000
+    port:7010
   },
-  base:"/pharynxvision"
+  base:"/akasa"
 })
 
