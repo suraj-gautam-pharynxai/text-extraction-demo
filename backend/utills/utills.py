@@ -241,14 +241,14 @@ note: Given a scanned or photographed form, identify and extract the values from
 
 3. **Application for availing the loan facility purchasing the vehicle(vehicle Loan)
     -**full Name of the applicant**
-    -**Date of Birth(dd/mm/yyyy)**
+    -**Date of Birth(dd/mm/yyyy)((Correct one to one data)**
     -**Sex:M/F**
     -Father's/Husband's Name
     -**Residence Address.**
     -**office**
     -Tel.No.
     -office.
-    -**Mobile.**
+    -**Mobile.(Correct value)**
     -Name of the employee/Business Establishment.
     -business specify
     -partnesrship/proprietorship/ltd.company
@@ -258,28 +258,28 @@ note: Given a scanned or photographed form, identify and extract the values from
 
 
 4. **Co-Borrower**
-   -**full Name of the Co-Borrower**
-   -Father's/Husband's Name 
+   -**full Name of the Co-Borrower((Correct one to one data)**
+   - Father's/Husband's Name 
    -**Residenece Address**
    -**Ph.No**
-   -**Mob**
-   - Family Mob.No
+   -**Mob(Correct value)**
+   - **Family Mob.No(Correct one to one data)**
    - Name of the employee/bussiness eztablishment
-   -Address
-   -Designation
-   -Office
+   - Address(Correct one to one data)
+   - Designation
+   - Office
 
 5. **co-Borrower/Guarantor
    -Guarantor1
      -**Name**
-     -**Address**
+     -**Address(Correct Address)**
      -**city**
      -**pincode**
      -**Ph.No. (R)......(O)..**
      
     -Guarantor2
      -Name
-     -Address
+     -Address(Correct Address)
      -city
      -pincode
      -Ph.No. (R)......(O)..
@@ -318,7 +318,7 @@ Ensure all fields, especially **signature of the Borrowers**, is extracted along
             "data": ["key1", "key2", "key3"]
       },
 
-########3jpg      
+#######3jpg      
 {
             "prompt": """
 Carefully analyze the provided image of a printed form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
@@ -343,7 +343,6 @@ note: Given a scanned or photographed form, identify and extract the values from
             "data": ["key1", "key2", "key3"]
          
        },
-
 
 ##########4jpg
 {
@@ -544,7 +543,6 @@ If a field contains multiple values and one is crossed out, only return the non-
 
 ##########10jpg
 
-
 {
             "prompt": """
 Carefully analyze the provided image of a printed form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
@@ -556,7 +554,7 @@ note: Given a scanned or photographed form, identify and extract the values from
    - Each field (key) and its corresponding value should be presented as a key-value pair. Do not use nested JSON objects.
  
 2. **Critical Fields (Mandatory)**:
-   - Extract the following fields with absolute accuracy, regardless of their location on the form:
+   - Extract the following fields with absolute accuracy, regardless of their location on the form and fill correct value :
     - **Government Entity Name**
     - **Department Name**
     - **Location (City, State)**
@@ -564,7 +562,7 @@ note: Given a scanned or photographed form, identify and extract the values from
     - **Vehicle Class**
     - **Received From**
     - **Receipt Date**
-    - **Chassis No.**
+    - **Chassis No.(Correct one to one data)**
     - **Financer Name**
     - **Bank Ref No.**
     - **Vehicle No.**
@@ -666,76 +664,96 @@ Field Name: Extracted Value.
      },
 
 
+
+
 {
-            "prompt": """
-Carefully analyze the provided image of a pre-filled form and extract **every visible field and its corresponding value**. Follow these instructions to ensure no information is missed:
- 
-note: Given a scanned or photographed form, identify and extract the values from the input fields. Ignore any values that are crossed out or marked as incorrect. Only select the values that are correctly filled and visible in the form. The crossed-out values should not be selected as they represent errors or deletions. Ensure that only the most recent, unaltered value in each field is chosen.
- 
-1. **Output Format**:
-   - Return the data as a single, flat JSON object.
-   - Each field (key) and its corresponding value should be presented as a key-value pair. Do not use nested JSON objects.
- 
+  "prompt": """Please extract all fields and their values from the provided insurance policy document image and provide the result as a JSON object. Note: Return only the JSON object without any text or sub-JSON objects. Ensure all fields are captured accurately, including typed and handwritten details, and maintain the original order as they appear in the document.
+  
 2. **Critical Fields (Mandatory)**:
-   - Extract the following fields with absolute accuracy, regardless of their location on the form:
-        - **Logo**
-        - **Document Title**
-        - **Header Notes**
-        - **Name of Supplier**
-        - **Authorised Dealer Details (including contact and GSTIN)**
-        - **Invoice No.**
-        - **Invoice Date**
-        - **Bill of Supply**
-        - **Name of Buyer**
-        - **Buyer's GSTIN No.**
-        - **Buyer's Address**
-        - **Contact No. (R), (O), (M)**
-        - **H.P.A./H.Y.P. with**
-        - **Description of Item (with fields for UOM, HSN Code, QTY, Rate, and Basic)**
-        - **Chassis No.**
-        - **Engine No.**
-        - **Colour**
-        - **Battery No.**
-        - **Mfg. Year**
-        - **OM No.**
-        - **CNG/PRV No.**
-        - **Total GST Amount in Word**
-        - **Total Amount Payable in Word**
-        - **Discount**
-        - **Total Taxable Amount**
-        - **CGST Amount and Rate**
-        - **SGST Amount and Rate**
-        - **IGST Amount and Rate**
-        - **Total GST Amount**
-        - **Gross Amount**
-        - **Ref**
-        - **Terms & Conditions (all points)**
-        - **Authorised Signatory Name**
-   - These fields are essential and must be included in the output, even if they are less prominent or written in an unusual format.
- 
-3. **Other Fields**:
-   - Extract all additional fields and their values, such as:
-     - **Logo or branding text**
-     - **Additional notes or disclaimers**
-   - Do not skip any visible key-value pairs, whether printed, handwritten, or partially visible.
- 
-4. **Positional Awareness**:
-   -  Key-value pairs may appear at the top, sides, or bottom of the document.
-   - Multiple key-value pairs may exist on a single line or across rows; ensure all are captured.
-   
- 
-6. **Extracting Non-Crossed-Out Values**:
-- Select only values that are *not crossed out** (i.e., text without any marks or lines striking through it). Ignore any values that are visibly struck through with a pen or other markings. If all values for a field are crossed out, indicate 'No valid entry'.such as:
-Field Name: Extracted Value.
+   - **Logo**
+   - **Document Title**
+   - **Policy Type**
+   - **Product Code**
+   - **Name of Insured**
+   - **Address**
+   - **Telephone No**
+   - **Email Address**
+   - **Mobile No**
+   - **Nominee Name**
+   - **Relationship**
+   - **Age(it is mandatory)**
+   - **Policy No**
+   - **Period of Insurance**
+   - **E-Policy No**
+   - **Policy Issued On**
+   - **Cover Note No**
+   - **Policy Location**
+   - **Hypothecated to**
+   - **Category**
+   - **Invoice No**
+   - **Servicing Branch Name**
+   - **Servicing Branch Address**
+   - **Politically Exposed Person (PEP)/Close Relationship Status**
+   - **Vehicle Registration No**
+   - **Make**
+   - **Vehicle Subclass**
+   - **Model**
+   - **Model Build**
+   - **Type of Body**
+   - **CC**
+   - **Mfg Year**
+   - **Seating Capacity**
+   - **Carrying Capacity**
+   - **Chassis No**
+   - **Engine No**
+   - **Body IDV**
+   - **Chassis IDV**
+   - **Electrical/Electronic Accessories**
+   - **Non-Electrical Accessories**
+   - **CNG/LPG Unit**
+   - **Total IDV**
+   - **Premium Details Heading**
+   - **Basic OD Premium**
+   - **IMT-23 Loading**
+   - **Total Own Damage Premium(A)**
+   - **Basic Third Party Liability**
+   - **Add-On Legal Liability for Paid Driver**
+   - **Total Liability Premium(B)**
+   - **Total Package Premium(A+B)**
+   - **CGST Amount and Rate**
+   - **SGST Amount and Rate**
+   - **Total Tax Payable**
+   - **Total Premium Payable**
+   - **Geographical Area**
+   - **Compulsory Deductible**
+   - **Voluntary Deductible**
+   - **Premium Collection No**
+   - **Premium Amount**
+   - **GSTIN Reg.No**
+   - **HSN/SAC Code**
+   - **Applicable IMT Clauses**
+   - **Receipt Date**
+   - **Footer Notes**
+   - **Mailing Address**
+   - **Registered Office Address**
+   - **Authorised Signatory Name**
+   - **Toll-Free Number**
+   - **Claim SMS Number**
+   - **IRDA Reg. No**
+   - **TRDA Reg. No**
+  
+3. **Additional Instructions**:
+   - Ensure all fields and their values are captured accurately, regardless of their position on the document.
+   - Correctly handle rows and columns with mismatched data and maintain their logical sequence.
+   - Include handwritten annotations or remarks if they are relevant and legible.
+   - For any fields that are not visible or legible, indicate "Not Available."
+   - Include all details under headings like "Premium Details" and "Geographical Area" without skipping.
+   - Return the data in plain JSON format without any additional commentary.
 """,
-            "data": ["key1", "key2", "key3"]
-        },
+        "data": ["key1", "key2", "key3"]
+ }
 
-
-{
-        "prompt": """Please extract all fields and their values from the following invoice image and provide the result as a JSON object. from the provided image. Note: please return only the json do not return any text other than json object and one more thing is do not make any sub json object of the main json object""",
-        "data": []
-    }    ]
+]
     
     default_prompt = {
         "prompt": """Please extract all fields and their values from the following invoice image and provide the result as a JSON object. from the provided image. Note: please return only the json do not return any text other than json object and one more thing is do not make any sub json object of the main json object""",
