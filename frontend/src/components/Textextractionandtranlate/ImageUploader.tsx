@@ -1,27 +1,38 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import englishData from "../../service/en.json";
 import hindiData from "../../service/hi.json";
 const ImageUploader: React.FC = () => {
-  const [image, setImage] = useState<string | null>(null);
+  const [image, setImage] = useState<string | null>(
+    localStorage.getItem("uploadedImage") || null
+  );
   const [isExpandedHi, setIsExpandedHi] = useState(false);
   const [isExpandedEn, setIsExpandedEn] = useState(false);
 
-  const wordLimit = 50; // लिमिट 200 शब्दों की है
-  const words1 = englishData.body.split(" "); // टेक्स्ट को शब्दों में विभाजित करें
+  const wordLimit = 700;
+  const words1 = englishData.body.split(" ");
   const word2 = hindiData.body.split(" ");
+  useEffect(() => {
+    // Retrieve the image from localStorage when the component mounts
+    const storedImage = localStorage.getItem("uploadedImage");
+    if (storedImage) {
+      setImage(storedImage);
+    }
+  }, []);
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImage(reader.result as string);
+        const imageData = reader.result as string;
+        setImage(imageData);
+        localStorage.setItem("uploadedImage", imageData);
       };
       reader.readAsDataURL(file);
     }
   };
-
   const handleRemoveImage = () => {
     setImage(null);
+    localStorage.removeItem("uploadedImage");
   };
 
   return (
